@@ -2,9 +2,12 @@ import 'package:flutter/material.dart';
 import '../widgets/subtitle_line.dart';
 import '../widgets/media_controls.dart';
 import '../models/subtitle_data.dart';
+import '../models/media_item.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final MediaItem media;
+
+  const HomePage({super.key, required this.media});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -13,7 +16,13 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   bool isPlaying = false;
   double currentPosition = 0.17; // 0:17 as shown in screenshot
-  double totalDuration = 2.52; // 2:52 total duration
+  late double totalDuration;
+
+  @override
+  void initState() {
+    super.initState();
+    totalDuration = widget.media.duration;
+  }
 
   // Sample subtitle data - you can replace this with real data
   final List<SubtitleData> subtitles = [
@@ -85,7 +94,9 @@ class _HomePageState extends State<HomePage> {
                 child: Row(
                   children: [
                     IconButton(
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pop(context);
+                      },
                       icon: const Icon(
                         Icons.keyboard_arrow_down,
                         color: Colors.white,
@@ -98,23 +109,23 @@ class _HomePageState extends State<HomePage> {
               ),
 
               // Song info
-              const Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24.0),
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 24.0),
                 child: Column(
                   children: [
                     Text(
-                      "The Emptiness Machine",
-                      style: TextStyle(
+                      widget.media.title,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 24,
                         fontWeight: FontWeight.bold,
                       ),
                       textAlign: TextAlign.center,
                     ),
-                    SizedBox(height: 8),
+                    const SizedBox(height: 8),
                     Text(
-                      "Linkin Park",
-                      style: TextStyle(
+                      widget.media.artist,
+                      style: const TextStyle(
                         color: Colors.white70,
                         fontSize: 16,
                       ),
