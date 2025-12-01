@@ -338,7 +338,7 @@ class _HomePageState extends State<HomePage> {
             children: [
               // Header
               Padding(
-                padding: const EdgeInsets.all(16.0),
+                padding: const EdgeInsets.symmetric(horizontal: 16.0),
                 child: Row(
                   children: [
                     IconButton(
@@ -348,7 +348,7 @@ class _HomePageState extends State<HomePage> {
                       icon: const Icon(
                         Icons.keyboard_arrow_down,
                         color: Colors.white,
-                        size: 28,
+                        size: 24,
                       ),
                     ),
                     const Spacer(),
@@ -386,7 +386,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
 
-              const SizedBox(height: 40),
+              const SizedBox(height: 12),
 
               // Subtitles with song info
               Expanded(
