@@ -85,8 +85,16 @@ class _HomePageState extends State<HomePage> {
         isLoading = true;
       });
 
+      print(
+          'Loading subtitles for: ${widget.media.title} by ${widget.media.artist}');
+      print('Available subtitle files: ${widget.media.subtitleFiles.length}');
+
+      // Use the subtitle files that are already loaded in the MediaItem
       if (widget.media.subtitleFiles.isNotEmpty) {
-        // Load subtitles from the media's subtitle files
+        for (final file in widget.media.subtitleFiles) {
+          print('Subtitle file: ${file.filePath} (${file.language})');
+        }
+
         final englishFile = widget.media.subtitleFiles
             .where((file) => file.languageCode == 'en')
             .firstOrNull;
@@ -95,7 +103,7 @@ class _HomePageState extends State<HomePage> {
             .firstOrNull;
 
         if (englishFile != null && portugueseFile != null) {
-          // For web, try to load from assets directly
+          print('Loading both English and Portuguese subtitles...');
           try {
             final englishContent =
                 await rootBundle.loadString(englishFile.filePath);
@@ -106,52 +114,105 @@ class _HomePageState extends State<HomePage> {
             final portugueseSubtitles =
                 SrtParser.parseSrtContent(portugueseContent);
 
-            // Merge by matching timestamps
+            print('Parsed ${englishSubtitles.length} English subtitles');
+            print('Parsed ${portugueseSubtitles.length} Portuguese subtitles');
+
+            // Merge by index (assuming they have matching timestamps)
             final mergedSubtitles = <SubtitleData>[];
-            for (int i = 0; i < englishSubtitles.length; i++) {
-              final english = englishSubtitles[i];
+            final maxLength =
+                englishSubtitles.length > portugueseSubtitles.length
+                    ? englishSubtitles.length
+                    : portugueseSubtitles.length;
+
+            for (int i = 0; i < maxLength; i++) {
+              final english =
+                  i < englishSubtitles.length ? englishSubtitles[i] : null;
               final portuguese = i < portugueseSubtitles.length
                   ? portugueseSubtitles[i]
                   : null;
 
-              mergedSubtitles.add(SubtitleData(
-                english: english.english,
-                portuguese: portuguese?.english ??
-                    '', // Using english field for Portuguese content
-                startTime: english.startTime,
-                endTime: english.endTime,
-              ));
+              if (english != null) {
+                mergedSubtitles.add(SubtitleData(
+                  english: english.english,
+                  portuguese: portuguese?.english ??
+                      '', // Using english field for Portuguese content
+                  startTime: english.startTime,
+                  endTime: english.endTime,
+                ));
+              } else if (portuguese != null) {
+                mergedSubtitles.add(SubtitleData(
+                  english: '',
+                  portuguese: portuguese
+                      .english, // Using english field for Portuguese content
+                  startTime: portuguese.startTime,
+                  endTime: portuguese.endTime,
+                ));
+              }
             }
 
             setState(() {
               subtitles = mergedSubtitles;
             });
+            print(
+                'Successfully loaded ${mergedSubtitles.length} merged subtitles');
+            return;
           } catch (e) {
-            print('Error loading subtitle content: $e');
-            _loadSampleSubtitles();
+            print('Error loading bilingual subtitles: $e');
           }
-        } else if (englishFile != null) {
-          // Load only English subtitles
+        }
+
+        // Try loading just English subtitles
+        if (englishFile != null) {
+          print('Loading only English subtitles...');
           try {
             final content = await rootBundle.loadString(englishFile.filePath);
             final parsedSubtitles = SrtParser.parseSrtContent(content);
             setState(() {
               subtitles = parsedSubtitles;
             });
+            print(
+                'Successfully loaded ${parsedSubtitles.length} English subtitles');
+            return;
           } catch (e) {
             print('Error loading English subtitles: $e');
-            _loadSampleSubtitles();
           }
-        } else {
-          // Use sample subtitles if no files found
-          _loadSampleSubtitles();
         }
-      } else {
-        // Use sample subtitles if no subtitle files
-        _loadSampleSubtitles();
+
+        // Try loading Portuguese subtitles if English failed
+        if (portugueseFile != null) {
+          print('Loading only Portuguese subtitles...');
+          try {
+            final content =
+                await rootBundle.loadString(portugueseFile.filePath);
+            final parsedSubtitles = SrtParser.parseSrtContent(content);
+            // Map Portuguese to English field for display
+            final mappedSubtitles = parsedSubtitles
+                .map((sub) => SubtitleData(
+                      english:
+                          sub.english, // Portuguese content is in english field
+                      portuguese: '',
+                      startTime: sub.startTime,
+                      endTime: sub.endTime,
+                    ))
+                .toList();
+            setState(() {
+              subtitles = mappedSubtitles;
+            });
+            print(
+                'Successfully loaded ${mappedSubtitles.length} Portuguese subtitles');
+            return;
+          } catch (e) {
+            print('Error loading Portuguese subtitles: $e');
+          }
+        }
       }
+
+      // Fallback to sample subtitles
+      print(
+          'No subtitle files found or failed to load, using sample subtitles');
+      _loadSampleSubtitles();
     } catch (e) {
-      print('Error loading subtitles: $e');
+      print('Error in _loadSubtitles: $e');
       _loadSampleSubtitles();
     } finally {
       setState(() {

@@ -37,12 +37,17 @@ class MediaLibraryService {
   static Future<List<MediaItem>> scanAssetFolder() async {
     final List<MediaItem> mediaItems = [];
 
-    // Direct approach: try to load known files
-    const knownMediaFiles = [
-      'Travis Scott - goosebumps (Official Video) ft. Kendrick Lamar.mp3',
-    ];
+    // Use the exact filenames from the assets directory
+    const mediaFileMap = {
+      'Travis Scott - goosebumps (Official Video) ft. Kendrick Lamar.mp3': [
+        'Travis Scott - goosebumps (Official Video) ft. Kendrick Lamar.en.srt',
+        'Travis Scott - goosebumps (Official Video) ft. Kendrick Lamar.pt.srt',
+      ],
+    };
 
-    for (final audioFile in knownMediaFiles) {
+    for (final entry in mediaFileMap.entries) {
+      final audioFile = entry.key;
+      final subtitleFileList = entry.value;
       final audioPath = 'assets/media/$audioFile';
 
       try {
@@ -55,17 +60,18 @@ class MediaLibraryService {
         final artist = parts.length > 1 ? parts[0] : 'Unknown Artist';
         final title = parts.length > 1 ? parts[1] : nameWithoutExt;
 
-        // Look for subtitle files
+        // Look for exact subtitle files
         final List<SubtitleFile> subtitleFiles = [];
-        const languages = ['en', 'pt', 'es', 'fr', 'de'];
 
-        for (final lang in languages) {
-          final subtitlePath = 'assets/subtitles/$nameWithoutExt.$lang.srt';
+        for (final subtitleFileName in subtitleFileList) {
+          final subtitlePath = 'assets/subtitles/$subtitleFileName';
+          print('Checking for subtitle file: $subtitlePath');
           try {
             await rootBundle.load(subtitlePath);
             subtitleFiles.add(SubtitleFile.fromPath(subtitlePath));
+            print('✓ Found subtitle file: $subtitlePath');
           } catch (e) {
-            // Subtitle file doesn't exist, continue
+            print('✗ Could not find subtitle file: $subtitlePath - $e');
           }
         }
 
@@ -81,7 +87,8 @@ class MediaLibraryService {
         );
 
         mediaItems.add(mediaItem);
-        print('Added media item: $title by $artist');
+        print(
+            'Added media item: $title by $artist with ${subtitleFiles.length} subtitle files');
       } catch (e) {
         print('Could not load audio file: $audioPath - $e');
       }
