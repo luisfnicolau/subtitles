@@ -24,6 +24,8 @@ class _HomePageState extends State<HomePage> {
   List<SubtitleData> subtitles = [];
   bool isLoading = true;
   String secondLanguage = 'pt'; // 'pt' or 'fr'
+  final ScrollController _scrollController = ScrollController();
+  bool _autoScrollEnabled = true;
 
   @override
   void initState() {
@@ -36,6 +38,7 @@ class _HomePageState extends State<HomePage> {
 
   @override
   void dispose() {
+    _scrollController.dispose();
     _audioPlayer.dispose();
     super.dispose();
   }
@@ -55,6 +58,7 @@ class _HomePageState extends State<HomePage> {
           setState(() {
             currentPosition = position.inMilliseconds / 1000.0;
           });
+          _scrollToHighlightedSubtitle();
         }
       });
 
@@ -288,6 +292,37 @@ class _HomePageState extends State<HomePage> {
     _loadSubtitles();
   }
 
+  void _scrollToHighlightedSubtitle() {
+    if (!_autoScrollEnabled || !_scrollController.hasClients) return;
+
+    final highlightedIndex =
+        displaySubtitles.indexWhere((sub) => sub.isHighlighted);
+    if (highlightedIndex == -1) return;
+
+    // Add 1 because index 0 is the song info header
+    final actualIndex = highlightedIndex + 1;
+
+    // Calculate the position to scroll to center the highlighted subtitle
+    final itemHeight = 80.0; // Approximate height of subtitle line
+    final headerHeight = 140.0; // Song info header approximate height
+    final viewportHeight = _scrollController.position.viewportDimension;
+
+    final targetOffset = (actualIndex * itemHeight) +
+        headerHeight -
+        (viewportHeight / 2) +
+        (itemHeight / 2);
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final minScroll = _scrollController.position.minScrollExtent;
+
+    final clampedOffset = targetOffset.clamp(minScroll, maxScroll);
+
+    _scrollController.animateTo(
+      clampedOffset,
+      duration: const Duration(milliseconds: 300),
+      curve: Curves.easeInOut,
+    );
+  }
+
   SubtitleData? get currentSubtitle {
     for (final subtitle in subtitles) {
       if (currentPosition >= subtitle.startTime &&
@@ -396,41 +431,53 @@ class _HomePageState extends State<HomePage> {
                           color: Colors.white,
                         ),
                       )
-                    : ListView.builder(
-                        padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                        itemCount: displaySubtitles.length + 1,
-                        itemBuilder: (context, index) {
-                          if (index == 0) {
-                            // Song info as first item
-                            return Padding(
-                              padding: const EdgeInsets.only(bottom: 40.0),
-                              child: Column(
-                                children: [
-                                  Text(
-                                    widget.media.title,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 24,
-                                      fontWeight: FontWeight.bold,
-                                    ),
-                                    textAlign: TextAlign.center,
-                                  ),
-                                  const SizedBox(height: 8),
-                                  Text(
-                                    widget.media.artist,
-                                    style: const TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 16,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            );
+                    : NotificationListener<UserScrollNotification>(
+                        onNotification: (notification) {
+                          // Detect user drag to disable auto-scroll
+                          if (_autoScrollEnabled) {
+                            setState(() {
+                              _autoScrollEnabled = false;
+                            });
                           }
-                          return SubtitleLine(
-                            subtitle: displaySubtitles[index - 1],
-                          );
+                          return false;
                         },
+                        child: ListView.builder(
+                          controller: _scrollController,
+                          padding: const EdgeInsets.symmetric(horizontal: 24.0),
+                          itemCount: displaySubtitles.length + 1,
+                          itemBuilder: (context, index) {
+                            if (index == 0) {
+                              // Song info as first item
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 40.0),
+                                child: Column(
+                                  children: [
+                                    Text(
+                                      widget.media.title,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 24,
+                                        fontWeight: FontWeight.bold,
+                                      ),
+                                      textAlign: TextAlign.center,
+                                    ),
+                                    const SizedBox(height: 8),
+                                    Text(
+                                      widget.media.artist,
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 16,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+                            return SubtitleLine(
+                              subtitle: displaySubtitles[index - 1],
+                            );
+                          },
+                        ),
                       ),
               ),
 
