@@ -42,6 +42,7 @@ class MediaLibraryService {
       'Travis Scott - goosebumps (Official Video) ft. Kendrick Lamar.mp3': [
         'Travis Scott - goosebumps (Official Video) ft. Kendrick Lamar.en.srt',
         'Travis Scott - goosebumps (Official Video) ft. Kendrick Lamar.pt.srt',
+        'Travis Scott - goosebumps (Official Video) ft. Kendrick Lamar.fr.srt',
       ],
     };
 

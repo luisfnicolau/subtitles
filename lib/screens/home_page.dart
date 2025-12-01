@@ -23,6 +23,7 @@ class _HomePageState extends State<HomePage> {
   late double totalDuration;
   List<SubtitleData> subtitles = [];
   bool isLoading = true;
+  String secondLanguage = 'pt'; // 'pt' or 'fr'
 
   @override
   void initState() {
@@ -99,11 +100,11 @@ class _HomePageState extends State<HomePage> {
             .where((file) => file.languageCode == 'en')
             .firstOrNull;
         final portugueseFile = widget.media.subtitleFiles
-            .where((file) => file.languageCode == 'pt')
+            .where((file) => file.languageCode == secondLanguage)
             .firstOrNull;
 
         if (englishFile != null && portugueseFile != null) {
-          print('Loading both English and Portuguese subtitles...');
+          print('Loading both English and $secondLanguage subtitles...');
           try {
             final englishContent =
                 await rootBundle.loadString(englishFile.filePath);
@@ -115,7 +116,8 @@ class _HomePageState extends State<HomePage> {
                 SrtParser.parseSrtContent(portugueseContent);
 
             print('Parsed ${englishSubtitles.length} English subtitles');
-            print('Parsed ${portugueseSubtitles.length} Portuguese subtitles');
+            print(
+                'Parsed ${portugueseSubtitles.length} $secondLanguage subtitles');
 
             // Merge by index (assuming they have matching timestamps)
             final mergedSubtitles = <SubtitleData>[];
@@ -178,9 +180,9 @@ class _HomePageState extends State<HomePage> {
           }
         }
 
-        // Try loading Portuguese subtitles if English failed
+        // Try loading second language subtitles if English failed
         if (portugueseFile != null) {
-          print('Loading only Portuguese subtitles...');
+          print('Loading only $secondLanguage subtitles...');
           try {
             final content =
                 await rootBundle.loadString(portugueseFile.filePath);
@@ -199,7 +201,7 @@ class _HomePageState extends State<HomePage> {
               subtitles = mappedSubtitles;
             });
             print(
-                'Successfully loaded ${mappedSubtitles.length} Portuguese subtitles');
+                'Successfully loaded ${mappedSubtitles.length} $secondLanguage subtitles');
             return;
           } catch (e) {
             print('Error loading Portuguese subtitles: $e');
@@ -279,6 +281,13 @@ class _HomePageState extends State<HomePage> {
     }
   }
 
+  void _toggleLanguage() {
+    setState(() {
+      secondLanguage = secondLanguage == 'pt' ? 'fr' : 'pt';
+    });
+    _loadSubtitles();
+  }
+
   SubtitleData? get currentSubtitle {
     for (final subtitle in subtitles) {
       if (currentPosition >= subtitle.startTime &&
@@ -343,6 +352,36 @@ class _HomePageState extends State<HomePage> {
                       ),
                     ),
                     const Spacer(),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 6),
+                      decoration: BoxDecoration(
+                        color: Colors.white.withOpacity(0.2),
+                        borderRadius: BorderRadius.circular(20),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            secondLanguage == 'pt' ? 'PT' : 'FR',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 14,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                          const SizedBox(width: 4),
+                          GestureDetector(
+                            onTap: _toggleLanguage,
+                            child: const Icon(
+                              Icons.swap_horiz,
+                              color: Colors.white,
+                              size: 20,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
                   ],
                 ),
               ),
