@@ -1,47 +1,111 @@
 import 'package:flutter/material.dart';
 import '../models/media_item.dart';
+import '../services/media_library_service.dart';
+import '../widgets/import_media_dialog.dart';
 import 'home_page.dart';
 
-class MediaListPage extends StatelessWidget {
-  MediaListPage({super.key});
+class MediaListPage extends StatefulWidget {
+  const MediaListPage({super.key});
 
-  final List<MediaItem> mediaItems = [
-    MediaItem(
-      id: '1',
-      title: 'The Emptiness Machine',
-      artist: 'Linkin Park',
-      imageUrl: 'https://via.placeholder.com/300x300/B968C7/FFFFFF?text=LP',
-      duration: 2.52,
-    ),
-    MediaItem(
-      id: '2',
-      title: 'Heavy Is The Crown',
-      artist: 'Linkin Park',
-      imageUrl: 'https://via.placeholder.com/300x300/E91E63/FFFFFF?text=LP',
-      duration: 3.24,
-    ),
-    MediaItem(
-      id: '3',
-      title: 'Over Each Other',
-      artist: 'Linkin Park',
-      imageUrl: 'https://via.placeholder.com/300x300/9C27B0/FFFFFF?text=LP',
-      duration: 2.48,
-    ),
-    MediaItem(
-      id: '4',
-      title: 'Casualty',
-      artist: 'Linkin Park',
-      imageUrl: 'https://via.placeholder.com/300x300/673AB7/FFFFFF?text=LP',
-      duration: 3.15,
-    ),
-    MediaItem(
-      id: '5',
-      title: 'Overflow',
-      artist: 'Linkin Park',
-      imageUrl: 'https://via.placeholder.com/300x300/3F51B5/FFFFFF?text=LP',
-      duration: 2.33,
-    ),
-  ];
+  @override
+  State<MediaListPage> createState() => _MediaListPageState();
+}
+
+class _MediaListPageState extends State<MediaListPage> {
+  List<MediaItem> mediaItems = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadMediaLibrary();
+  }
+
+  Future<void> _loadMediaLibrary() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    try {
+      final items = await MediaLibraryService.getMediaLibrary();
+
+      // Add sample items if library is empty
+      if (items.isEmpty) {
+        items.addAll(_getSampleMediaItems());
+      }
+
+      setState(() {
+        mediaItems = items;
+      });
+    } catch (e) {
+      print('Error loading media library: $e');
+      setState(() {
+        mediaItems = _getSampleMediaItems();
+      });
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  List<MediaItem> _getSampleMediaItems() {
+    return [
+      MediaItem(
+        id: '1',
+        title: 'The Emptiness Machine',
+        artist: 'Linkin Park',
+        imageUrl: 'https://via.placeholder.com/300x300/B968C7/FFFFFF?text=LP',
+        duration: 2.52,
+        audioFilePath: '',
+      ),
+      MediaItem(
+        id: '2',
+        title: 'Heavy Is The Crown',
+        artist: 'Linkin Park',
+        imageUrl: 'https://via.placeholder.com/300x300/E91E63/FFFFFF?text=LP',
+        duration: 3.24,
+        audioFilePath: '',
+      ),
+      MediaItem(
+        id: '3',
+        title: 'Over Each Other',
+        artist: 'Linkin Park',
+        imageUrl: 'https://via.placeholder.com/300x300/9C27B0/FFFFFF?text=LP',
+        duration: 2.48,
+        audioFilePath: '',
+      ),
+      MediaItem(
+        id: '4',
+        title: 'Casualty',
+        artist: 'Linkin Park',
+        imageUrl: 'https://via.placeholder.com/300x300/673AB7/FFFFFF?text=LP',
+        duration: 3.15,
+        audioFilePath: '',
+      ),
+      MediaItem(
+        id: '5',
+        title: 'Overflow',
+        artist: 'Linkin Park',
+        imageUrl: 'https://via.placeholder.com/300x300/3F51B5/FFFFFF?text=LP',
+        duration: 2.33,
+        audioFilePath: '',
+      ),
+    ];
+  }
+
+  void _showImportDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => ImportMediaDialog(
+        onMediaImported: (mediaItem) {
+          setState(() {
+            mediaItems.add(mediaItem);
+          });
+        },
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -66,13 +130,26 @@ class MediaListPage extends StatelessWidget {
                 padding: const EdgeInsets.all(24.0),
                 child: Column(
                   children: [
-                    const Text(
-                      'Media Library',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 32,
-                        fontWeight: FontWeight.bold,
-                      ),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        const Text(
+                          'Media Library',
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontSize: 32,
+                            fontWeight: FontWeight.bold,
+                          ),
+                        ),
+                        IconButton(
+                          onPressed: _showImportDialog,
+                          icon: const Icon(
+                            Icons.add_circle_outline,
+                            color: Colors.white,
+                            size: 28,
+                          ),
+                        ),
+                      ],
                     ),
                     const SizedBox(height: 8),
                     Text(
@@ -88,27 +165,64 @@ class MediaListPage extends StatelessWidget {
 
               // Media List
               Expanded(
-                child: ListView.builder(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
-                  itemCount: mediaItems.length,
-                  itemBuilder: (context, index) {
-                    final media = mediaItems[index];
-                    return Padding(
-                      padding: const EdgeInsets.only(bottom: 16.0),
-                      child: MediaItemCard(
-                        media: media,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                              builder: (context) => HomePage(media: media),
+                child: isLoading
+                    ? const Center(
+                        child: CircularProgressIndicator(
+                          color: Colors.white,
+                        ),
+                      )
+                    : mediaItems.isEmpty
+                        ? Center(
+                            child: Column(
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                Icon(
+                                  Icons.library_music,
+                                  size: 64,
+                                  color: Colors.white.withOpacity(0.5),
+                                ),
+                                const SizedBox(height: 16),
+                                Text(
+                                  'No media files found',
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.7),
+                                    fontSize: 18,
+                                  ),
+                                ),
+                                const SizedBox(height: 8),
+                                Text(
+                                  'Tap the + button to import your first song',
+                                  style: TextStyle(
+                                    color: Colors.white.withOpacity(0.5),
+                                    fontSize: 14,
+                                  ),
+                                ),
+                              ],
                             ),
-                          );
-                        },
-                      ),
-                    );
-                  },
-                ),
+                          )
+                        : ListView.builder(
+                            padding:
+                                const EdgeInsets.symmetric(horizontal: 16.0),
+                            itemCount: mediaItems.length,
+                            itemBuilder: (context, index) {
+                              final media = mediaItems[index];
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 16.0),
+                                child: MediaItemCard(
+                                  media: media,
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) =>
+                                            HomePage(media: media),
+                                      ),
+                                    );
+                                  },
+                                ),
+                              );
+                            },
+                          ),
               ),
             ],
           ),
@@ -222,6 +336,26 @@ class MediaItemCard extends StatelessWidget {
                       fontSize: 12,
                     ),
                   ),
+                  if (media.hasSubtitles) ...[
+                    const SizedBox(height: 4),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.subtitles,
+                          size: 12,
+                          color: Colors.white.withOpacity(0.7),
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          media.availableLanguages.join(', '),
+                          style: TextStyle(
+                            color: Colors.white.withOpacity(0.7),
+                            fontSize: 10,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
                 ],
               ),
             ),
