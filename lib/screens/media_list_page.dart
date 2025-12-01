@@ -27,71 +27,36 @@ class _MediaListPageState extends State<MediaListPage> {
     });
 
     try {
-      final items = await MediaLibraryService.getMediaLibrary();
+      // For web, we can only scan assets folder, not file system
+      final assetItems = await MediaLibraryService.scanAssetFolder();
+      print('Loaded ${assetItems.length} items from assets');
 
-      // Add sample items if library is empty
-      if (items.isEmpty) {
-        items.addAll(_getSampleMediaItems());
+      // Try to load from media library (will fail on web, that's ok)
+      List<MediaItem> items = [];
+      try {
+        items = await MediaLibraryService.getMediaLibrary();
+        print('Loaded ${items.length} items from media library');
+      } catch (e) {
+        print('Could not load from media library (expected on web): $e');
       }
 
+      // Combine both sources
+      final allItems = [...items, ...assetItems];
+      print('Total items: ${allItems.length}');
+
       setState(() {
-        mediaItems = items;
+        mediaItems = allItems;
       });
     } catch (e) {
       print('Error loading media library: $e');
       setState(() {
-        mediaItems = _getSampleMediaItems();
+        mediaItems = [];
       });
     } finally {
       setState(() {
         isLoading = false;
       });
     }
-  }
-
-  List<MediaItem> _getSampleMediaItems() {
-    return [
-      MediaItem(
-        id: '1',
-        title: 'The Emptiness Machine',
-        artist: 'Linkin Park',
-        imageUrl: 'https://via.placeholder.com/300x300/B968C7/FFFFFF?text=LP',
-        duration: 2.52,
-        audioFilePath: '',
-      ),
-      MediaItem(
-        id: '2',
-        title: 'Heavy Is The Crown',
-        artist: 'Linkin Park',
-        imageUrl: 'https://via.placeholder.com/300x300/E91E63/FFFFFF?text=LP',
-        duration: 3.24,
-        audioFilePath: '',
-      ),
-      MediaItem(
-        id: '3',
-        title: 'Over Each Other',
-        artist: 'Linkin Park',
-        imageUrl: 'https://via.placeholder.com/300x300/9C27B0/FFFFFF?text=LP',
-        duration: 2.48,
-        audioFilePath: '',
-      ),
-      MediaItem(
-        id: '4',
-        title: 'Casualty',
-        artist: 'Linkin Park',
-        imageUrl: 'https://via.placeholder.com/300x300/673AB7/FFFFFF?text=LP',
-        duration: 3.15,
-        audioFilePath: '',
-      ),
-      MediaItem(
-        id: '5',
-        title: 'Overflow',
-        artist: 'Linkin Park',
-        imageUrl: 'https://via.placeholder.com/300x300/3F51B5/FFFFFF?text=LP',
-        duration: 2.33,
-        audioFilePath: '',
-      ),
-    ];
   }
 
   void _showImportDialog() {
@@ -157,6 +122,14 @@ class _MediaListPageState extends State<MediaListPage> {
                       style: TextStyle(
                         color: Colors.white.withOpacity(0.7),
                         fontSize: 16,
+                      ),
+                    ),
+                    const SizedBox(height: 16),
+                    Text(
+                      '${mediaItems.length} songs',
+                      style: TextStyle(
+                        color: Colors.white.withOpacity(0.5),
+                        fontSize: 14,
                       ),
                     ),
                   ],

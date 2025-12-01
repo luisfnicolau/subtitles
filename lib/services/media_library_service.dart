@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:file_picker/file_picker.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:flutter/services.dart';
 import '../models/media_item.dart';
 import '../models/subtitle_file.dart';
 
@@ -29,6 +30,64 @@ class MediaLibraryService {
       }
     }
 
+    return mediaItems;
+  }
+
+  // New method to scan assets folder
+  static Future<List<MediaItem>> scanAssetFolder() async {
+    final List<MediaItem> mediaItems = [];
+
+    // Direct approach: try to load known files
+    const knownMediaFiles = [
+      'Travis Scott - goosebumps (Official Video) ft. Kendrick Lamar.mp3',
+    ];
+
+    for (final audioFile in knownMediaFiles) {
+      final audioPath = 'assets/media/$audioFile';
+
+      try {
+        // Check if audio file exists by trying to load it
+        await rootBundle.load(audioPath);
+
+        // Extract title and artist from filename
+        final nameWithoutExt = audioFile.split('.').first;
+        final parts = nameWithoutExt.split(' - ');
+        final artist = parts.length > 1 ? parts[0] : 'Unknown Artist';
+        final title = parts.length > 1 ? parts[1] : nameWithoutExt;
+
+        // Look for subtitle files
+        final List<SubtitleFile> subtitleFiles = [];
+        const languages = ['en', 'pt', 'es', 'fr', 'de'];
+
+        for (final lang in languages) {
+          final subtitlePath = 'assets/subtitles/$nameWithoutExt.$lang.srt';
+          try {
+            await rootBundle.load(subtitlePath);
+            subtitleFiles.add(SubtitleFile.fromPath(subtitlePath));
+          } catch (e) {
+            // Subtitle file doesn't exist, continue
+          }
+        }
+
+        final mediaItem = MediaItem(
+          id: nameWithoutExt,
+          title: title,
+          artist: artist,
+          imageUrl:
+              'https://via.placeholder.com/300x300/B968C7/FFFFFF?text=${Uri.encodeComponent(artist.length >= 2 ? artist.substring(0, 2) : artist)}',
+          duration: 3.5, // Default duration
+          audioFilePath: audioPath,
+          subtitleFiles: subtitleFiles,
+        );
+
+        mediaItems.add(mediaItem);
+        print('Added media item: $title by $artist');
+      } catch (e) {
+        print('Could not load audio file: $audioPath - $e');
+      }
+    }
+
+    print('Found ${mediaItems.length} media items in assets');
     return mediaItems;
   }
 
