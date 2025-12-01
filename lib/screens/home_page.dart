@@ -386,35 +386,9 @@ class _HomePageState extends State<HomePage> {
                 ),
               ),
 
-              // Song info
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                child: Column(
-                  children: [
-                    Text(
-                      widget.media.title,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                      ),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 8),
-                    Text(
-                      widget.media.artist,
-                      style: const TextStyle(
-                        color: Colors.white70,
-                        fontSize: 16,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-
               const SizedBox(height: 40),
 
-              // Subtitles
+              // Subtitles with song info
               Expanded(
                 child: isLoading
                     ? const Center(
@@ -422,16 +396,41 @@ class _HomePageState extends State<HomePage> {
                           color: Colors.white,
                         ),
                       )
-                    : Padding(
+                    : ListView.builder(
                         padding: const EdgeInsets.symmetric(horizontal: 24.0),
-                        child: ListView.builder(
-                          itemCount: displaySubtitles.length,
-                          itemBuilder: (context, index) {
-                            return SubtitleLine(
-                              subtitle: displaySubtitles[index],
+                        itemCount: displaySubtitles.length + 1,
+                        itemBuilder: (context, index) {
+                          if (index == 0) {
+                            // Song info as first item
+                            return Padding(
+                              padding: const EdgeInsets.only(bottom: 40.0),
+                              child: Column(
+                                children: [
+                                  Text(
+                                    widget.media.title,
+                                    style: const TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 24,
+                                      fontWeight: FontWeight.bold,
+                                    ),
+                                    textAlign: TextAlign.center,
+                                  ),
+                                  const SizedBox(height: 8),
+                                  Text(
+                                    widget.media.artist,
+                                    style: const TextStyle(
+                                      color: Colors.white70,
+                                      fontSize: 16,
+                                    ),
+                                  ),
+                                ],
+                              ),
                             );
-                          },
-                        ),
+                          }
+                          return SubtitleLine(
+                            subtitle: displaySubtitles[index - 1],
+                          );
+                        },
                       ),
               ),
 
@@ -444,15 +443,6 @@ class _HomePageState extends State<HomePage> {
                 totalTimeString: totalTimeString,
                 onPlayPause: _togglePlayback,
                 onSeek: _seekTo,
-                onTranslate: () {
-                  // Handle translate button
-                },
-                onShare: () {
-                  // Handle share button
-                },
-                onMore: () {
-                  // Handle more options
-                },
               ),
             ],
           ),

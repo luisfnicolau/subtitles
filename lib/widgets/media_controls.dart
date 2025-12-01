@@ -7,9 +7,6 @@ class MediaControls extends StatelessWidget {
   final String totalTimeString;
   final VoidCallback onPlayPause;
   final ValueChanged<double> onSeek;
-  final VoidCallback onTranslate;
-  final VoidCallback onShare;
-  final VoidCallback onMore;
 
   const MediaControls({
     super.key,
@@ -19,9 +16,6 @@ class MediaControls extends StatelessWidget {
     required this.totalTimeString,
     required this.onPlayPause,
     required this.onSeek,
-    required this.onTranslate,
-    required this.onShare,
-    required this.onMore,
   });
 
   @override
@@ -30,37 +24,6 @@ class MediaControls extends StatelessWidget {
       padding: const EdgeInsets.all(24.0),
       child: Column(
         children: [
-          // Action buttons
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-            children: [
-              IconButton(
-                onPressed: onTranslate,
-                icon: const Icon(
-                  Icons.translate,
-                  color: Colors.white,
-                  size: 24,
-                ),
-              ),
-              IconButton(
-                onPressed: onShare,
-                icon: const Icon(
-                  Icons.share,
-                  color: Colors.white,
-                  size: 24,
-                ),
-              ),
-              IconButton(
-                onPressed: onMore,
-                icon: const Icon(
-                  Icons.more_horiz,
-                  color: Colors.white,
-                  size: 24,
-                ),
-              ),
-            ],
-          ),
-
           const SizedBox(height: 20),
 
           // Progress bar
