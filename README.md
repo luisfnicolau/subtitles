@@ -1,136 +1,136 @@
-# Subtitles - Multi-Language Media Player
+# Subtitles - Player de Mídia Multi-Idioma
 
-A Flutter-based media player application that displays synchronized subtitles in multiple languages, designed to help users learn languages while enjoying their favorite music and media content.
+Um aplicativo player de mídia baseado em Flutter que exibe legendas sincronizadas em vários idiomas, projetado para ajudar usuários a aprenderem idiomas enquanto curtem suas músicas e conteúdos de mídia favoritos.
 
-## 🎯 Purpose
+## 🎯 Propósito
 
-Subtitles is a mobile and desktop application that enhances media consumption by providing real-time synchronized subtitles in multiple languages. Perfect for:
+Subtitles é um aplicativo mobile e desktop que aprimora o consumo de mídia fornecendo legendas sincronizadas em tempo real em múltiplos idiomas. Perfeito para:
 
-- **Language Learning**: Compare lyrics in your native language with the language you're learning
-- **Music Appreciation**: Better understand song lyrics with accurate translations
-- **Accessibility**: Follow along with media content through text display
-- **Multi-Language Support**: Switch between different subtitle languages on the fly
+- **Aprendizado de Idiomas**: Compare letras no seu idioma nativo com o idioma que você está aprendendo
+- **Apreciação Musical**: Entenda melhor as letras das músicas com traduções precisas
+- **Acessibilidade**: Acompanhe o conteúdo de mídia através de exibição de texto
+- **Suporte Multi-Idioma**: Alterne entre diferentes idiomas de legenda em tempo real
 
-## ✨ Features
+## ✨ Funcionalidades
 
-- **Multi-Language Subtitle Display**: View subtitles in two languages simultaneously (English + Portuguese/French)
-- **Real-Time Synchronization**: Subtitles automatically highlight and scroll as the media plays
-- **Media Library Management**: Import and organize your music with corresponding subtitle files
-- **SRT File Support**: Standard SubRip (.srt) subtitle format compatibility
-- **Audio Playback Controls**: Play, pause, and seek through your media
-- **Beautiful UI**: Gradient-based design with smooth animations
-- **Auto-Scroll**: Subtitles automatically scroll to keep the current line centered
-- **Language Switching**: Toggle between different subtitle languages (Portuguese ↔ French)
+- **Exibição de Legendas Multi-Idioma**: Visualize legendas em dois idiomas simultaneamente (Inglês + Português/Francês)
+- **Sincronização em Tempo Real**: As legendas destacam e rolam automaticamente conforme a mídia toca
+- **Gerenciamento de Biblioteca de Mídia**: Importe e organize suas músicas com arquivos de legenda correspondentes
+- **Suporte a Arquivos SRT**: Compatibilidade com formato padrão de legendas SubRip (.srt)
+- **Controles de Reprodução de Áudio**: Reproduza, pause e navegue pela sua mídia
+- **Interface Linda**: Design baseado em gradientes com animações suaves
+- **Rolagem Automática**: As legendas rolam automaticamente para manter a linha atual centralizada
+- **Alternância de Idiomas**: Alterne entre diferentes idiomas de legenda (Português ↔ Francês)
 
 ## 📱 Screenshots
 
-The app features:
-- A media library page to browse your imported songs
-- A player page with dual-language subtitle display
-- Media controls for playback management
-- Real-time subtitle highlighting
+O aplicativo apresenta:
+- Uma página de biblioteca de mídia para navegar pelas suas músicas importadas
+- Uma página de player com exibição de legendas em dois idiomas
+- Controles de mídia para gerenciamento de reprodução
+- Destaque de legendas em tempo real
 
-## 🚀 Getting Started
+## 🚀 Começando
 
-### Prerequisites
+### Pré-requisitos
 
 - Flutter SDK (>=3.4.0)
 - Dart SDK (>=3.4.0)
-- For iOS: Xcode and CocoaPods
-- For Android: Android Studio
+- Para iOS: Xcode e CocoaPods
+- Para Android: Android Studio
 
-### Installation
+### Instalação
 
-1. **Clone the repository**
+1. **Clone o repositório**
    ```bash
    git clone https://github.com/yourusername/subtitles.git
    cd subtitles
    ```
 
-2. **Install dependencies**
+2. **Instale as dependências**
    ```bash
    flutter pub get
    ```
 
-3. **For iOS (if running on macOS)**
+3. **Para iOS (se estiver rodando no macOS)**
    ```bash
    cd ios
    pod install
    cd ..
    ```
 
-### Running the App
+### Executando o App
 
-#### Development Mode
+#### Modo de Desenvolvimento
 
-**On iOS:**
+**No iOS:**
 ```bash
 flutter run -d ios
 ```
 
-**On Android:**
+**No Android:**
 ```bash
 flutter run -d android
 ```
 
-**On macOS:**
+**No macOS:**
 ```bash
 flutter run -d macos
 ```
 
-**On Windows:**
+**No Windows:**
 ```bash
 flutter run -d windows
 ```
 
-**On Linux:**
+**No Linux:**
 ```bash
 flutter run -d linux
 ```
 
-#### Release Mode
+#### Modo Release
 
 ```bash
 flutter run --release
 ```
 
-## 📂 Project Structure
+## 📂 Estrutura do Projeto
 
 ```
 lib/
-├── main.dart                          # App entry point
+├── main.dart                          # Ponto de entrada do app
 ├── models/
-│   ├── media_item.dart               # Media file data model
-│   ├── subtitle_data.dart            # Subtitle line data model
-│   └── subtitle_file.dart            # Subtitle file metadata
+│   ├── media_item.dart               # Modelo de dados de arquivo de mídia
+│   ├── subtitle_data.dart            # Modelo de dados de linha de legenda
+│   └── subtitle_file.dart            # Metadados de arquivo de legenda
 ├── screens/
-│   ├── home_page.dart                # Player screen with subtitles
-│   └── media_list_page.dart          # Media library screen
+│   ├── home_page.dart                # Tela do player com legendas
+│   └── media_list_page.dart          # Tela da biblioteca de mídia
 ├── services/
-│   ├── media_library_service.dart    # Media file management
-│   └── srt_parser.dart               # SRT subtitle parser
+│   ├── media_library_service.dart    # Gerenciamento de arquivos de mídia
+│   └── srt_parser.dart               # Parser de legendas SRT
 └── widgets/
-    ├── import_media_dialog.dart      # Media import dialog
-    ├── media_controls.dart           # Audio playback controls
-    └── subtitle_line.dart            # Subtitle display widget
+    ├── import_media_dialog.dart      # Diálogo de importação de mídia
+    ├── media_controls.dart           # Controles de reprodução de áudio
+    └── subtitle_line.dart            # Widget de exibição de legenda
 
 assets/
-├── media/                            # Audio files (.mp3, .m4a, etc.)
-└── subtitles/                        # Subtitle files (.srt)
+├── media/                            # Arquivos de áudio (.mp3, .m4a, etc.)
+└── subtitles/                        # Arquivos de legenda (.srt)
 ```
 
-## 🎵 Adding Media Files
+## 🎵 Adicionando Arquivos de Mídia
 
-### Option 1: Pre-bundled Media (Development)
+### Opção 1: Mídia Pré-empacotada (Desenvolvimento)
 
-1. Place your audio files in `assets/media/`
-2. Place corresponding subtitle files in `assets/subtitles/`
-3. Subtitle naming convention: `[Artist] - [Song Title].[language].srt`
-   - Example: `Travis Scott - goosebumps.en.srt`
-   - Example: `Travis Scott - goosebumps.pt.srt`
-   - Example: `Travis Scott - goosebumps.fr.srt`
+1. Coloque seus arquivos de áudio em `assets/media/`
+2. Coloque os arquivos de legenda correspondentes em `assets/subtitles/`
+3. Convenção de nomenclatura de legendas: `[Artista] - [Título da Música].[idioma].srt`
+   - Exemplo: `Travis Scott - goosebumps.en.srt`
+   - Exemplo: `Travis Scott - goosebumps.pt.srt`
+   - Exemplo: `Travis Scott - goosebumps.fr.srt`
 
-4. Update [`pubspec.yaml`](pubspec.yaml):
+4. Atualize o [`pubspec.yaml`](pubspec.yaml):
    ```yaml
    flutter:
      assets:
@@ -138,67 +138,67 @@ assets/
        - assets/subtitles/
    ```
 
-### Option 2: Import at Runtime
+### Opção 2: Importar em Tempo de Execução
 
-1. Tap the **+** button in the media library
-2. Select your audio file (.mp3, .m4a, .wav, etc.)
-3. (Optional) Select subtitle files (.srt)
-4. Fill in the song title and artist
-5. Tap **Import**
+1. Toque no botão **+** na biblioteca de mídia
+2. Selecione seu arquivo de áudio (.mp3, .m4a, .wav, etc.)
+3. (Opcional) Selecione arquivos de legenda (.srt)
+4. Preencha o título da música e o artista
+5. Toque em **Importar**
 
-## 📝 Subtitle Format
+## 📝 Formato de Legenda
 
-The app uses standard SRT (SubRip) subtitle format:
+O app usa o formato padrão de legendas SRT (SubRip):
 
 ```srt
 1
 00:00:15,800 --> 00:00:17,000
-First line of text
+Primeira linha de texto
 
 2
 00:00:21,600 --> 00:00:24,000
-Second line of text
+Segunda linha de texto
 ```
 
-## 🛠️ Dependencies
+## 🛠️ Dependências
 
-Key packages used:
-- [`just_audio`](https://pub.dev/packages/just_audio) (^0.9.38) - Audio playback
-- [`file_picker`](https://pub.dev/packages/file_picker) (^8.0.0+1) - File selection
-- [`path_provider`](https://pub.dev/packages/path_provider) (^2.1.1) - Local storage paths
-- [`permission_handler`](https://pub.dev/packages/permission_handler) (^11.1.0) - File permissions
+Principais pacotes utilizados:
+- [`just_audio`](https://pub.dev/packages/just_audio) (^0.9.38) - Reprodução de áudio
+- [`file_picker`](https://pub.dev/packages/file_picker) (^8.0.0+1) - Seleção de arquivos
+- [`path_provider`](https://pub.dev/packages/path_provider) (^2.1.1) - Caminhos de armazenamento local
+- [`permission_handler`](https://pub.dev/packages/permission_handler) (^11.1.0) - Permissões de arquivos
 
-## 🤝 Contributing
+## 🤝 Contribuindo
 
-Contributions are welcome! Please feel free to submit a Pull Request.
+Contribuições são bem-vindas! Sinta-se à vontade para enviar um Pull Request.
 
-## 📄 License
+## 📄 Licença
 
-This project is licensed under the MIT License - see the LICENSE file for details.
+Este projeto está licenciado sob a Licença MIT - veja o arquivo LICENSE para detalhes.
 
-## 🙏 Acknowledgments
+## 🙏 Agradecimentos
 
-- Built with Flutter
-- Uses the SubRip (.srt) subtitle format
-- Inspired by language learning and music appreciation apps
+- Construído com Flutter
+- Usa o formato de legendas SubRip (.srt)
+- Inspirado em aplicativos de aprendizado de idiomas e apreciação musical
 
-## 🐛 Known Issues
+## 🐛 Problemas Conhecidos
 
-- iOS crash on initial launch with Dart VM (see troubleshooting section)
-- Asset scanning may not work on all platforms (use import feature instead)
+- Crash no iOS no lançamento inicial com Dart VM (veja seção de solução de problemas)
+- Escaneamento de assets pode não funcionar em todas as plataformas (use a funcionalidade de importação em vez disso)
 
-## 💡 Future Enhancements
+## 💡 Melhorias Futuras
 
-- [ ] Auto fetch content from Youtube
-- [ ] Auto fetch content from Spotify
-- [ ] Support for more subtitle formats (ASS, VTT)
-- [ ] Automatic subtitle synchronization
-- [ ] Subtitle editing capabilities
-- [ ] Export playlists
-- [ ] Cloud storage integration
-- [ ] More language support
-- [ ] Offline lyrics downloading
+- [ ] Busca automática de conteúdo do Youtube
+- [ ] Busca automática de conteúdo do Spotify
+- [ ] Suporte para mais formatos de legenda (ASS, VTT)
+- [ ] Sincronização automática de legendas
+- [ ] Capacidades de edição de legendas
+- [ ] Exportar playlists
+- [ ] Integração com armazenamento em nuvem
+- [ ] Suporte para mais idiomas
+- [ ] Download offline de letras
 
 ---
 
-Made with ❤️ using Flutter
+Feito com ❤️ usando Flutter
